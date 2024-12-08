@@ -64,3 +64,9 @@
         <Footer/>
     </div>
 </template>
+
+<script setup>
+import { useAuth, useAuthStore, onMounted } from '#build/imports';
+
+const authStore = useAuthStore();
+</script>

@@ -24,14 +24,14 @@ export default defineNuxtConfig({
   ],
   auth: {
     isEnabled: true,
-    disableServerSideAuth: false,
-    baseURL: 'http://localhost:3000/api/v1',
+    baseURL: 'http://localhost:8080/api/v1/',
     provider: { 
       type: 'local',
       endpoints: {
-        signIn: { path: '/sessions', method: 'post' },
+        signIn: { path: 'sessions', method: 'post' },
         signOut: false,
-        signUp: { path: '/users', method: 'post' },
+        signUp: { path: 'users', method: 'post' },
+        getSession: { path: 'session', method: 'get' },
       },
       token: {
         signInResponseTokenPointer: '/data/token',

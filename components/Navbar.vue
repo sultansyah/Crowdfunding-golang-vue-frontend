@@ -20,16 +20,16 @@
         </ul>
         <ul class="flex ml-auto items-center mt-2">
             <li>
-                <a to="#"
+                <nuxt-link to="#"
                     class="inline-block bg-transparent border-white border hover:bg-white hover:bg-opacity-25 text-white font-light w-40 text-center px-6 py-1 text-lg rounded-full mr-4">
                     Sign Up
-                </a>
+                </nuxt-link>
             </li>
             <li>
-                <a to="#"
+                <nuxt-link to="/login"
                     class="inline-block bg-transparent border-white border hover:bg-white hover:bg-opacity-25 text-white font-light w-40 text-center px-6 py-1 text-lg rounded-full">
                     My Account
-                </a>
+                </nuxt-link>
             </li>
         </ul>
     </header>
