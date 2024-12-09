@@ -6,10 +6,14 @@ export const useAuthStore = defineStore('auth', {
     }),
     actions: {
         setUser(data) {
-            this.user = data;
+            this.user = data
         },
         clearAuth() {
-            this.user = null;
+            this.user = null
         },
+        logout() {
+            this.clearAuth()
+        }
     },
-});
+    persist: true
+})

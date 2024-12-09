@@ -60,7 +60,7 @@ const checkSession = async () => {
         if (session) {
             authStore.setUser(session.data)
 
-            navigateTo('dashboard')
+            navigateTo('/')
         }
     } catch (error) {
         console.log(`session error = ${error}`)

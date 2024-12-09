@@ -20,8 +20,12 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@sidebase/nuxt-auth',
     '@vite-pwa/nuxt',
-    '@pinia/nuxt'
+    '@pinia/nuxt',
+    'pinia-plugin-persistedstate/nuxt',
   ],
+  pinia: {
+    storesDirs: ['./stores/**'],
+  },
   auth: {
     isEnabled: true,
     baseURL: 'http://localhost:8080/api/v1/',
@@ -43,5 +47,5 @@ export default defineNuxtConfig({
       enablePeriodically: false,
       enableOnWindowFocus: false,
     }
-  }
+  },
 })
