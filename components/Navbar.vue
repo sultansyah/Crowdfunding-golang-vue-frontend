@@ -20,7 +20,7 @@
         </ul>
         <ul class="flex ml-auto items-center mt-2" v-if="props.user === null">
             <li>
-                <nuxt-link to="#"
+                <nuxt-link to="/register"
                     class="inline-block bg-transparent border-white border hover:bg-white hover:bg-opacity-25 text-white font-light w-40 text-center px-6 py-1 text-lg rounded-full mr-4">
                     Sign Up
                 </nuxt-link>

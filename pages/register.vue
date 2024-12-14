@@ -9,38 +9,38 @@
                 <div class="mb-6">
                     <div class="mb-4">
                         <label class="font-normal text-lg text-white block mb-3">Full Name</label>
-                        <input type="text"
+                        <input type="text" v-model="data.name"
                             class="auth-form focus:outline-none focus:bg-purple-hover focus:shadow-outline focus:border-purple-hover-stroke focus:text-gray-100"
-                            placeholder="Write Your Name Here" value="Julia Keeva Hanna" />
+                            placeholder="Write Your Name Here" />
                     </div>
                 </div>
                 <div class="mb-6">
                     <div class="mb-4">
                         <label class="font-normal text-lg text-white block mb-3">Occupation</label>
-                        <input type="text"
+                        <input type="text" v-model="data.occupation"
                             class="auth-form focus:outline-none focus:bg-purple-hover focus:shadow-outline focus:border-purple-hover-stroke focus:text-gray-100"
-                            placeholder="Write your occupation here" value="Graphic Designer" />
+                            placeholder="Write your occupation here" />
                     </div>
                 </div>
                 <div class="mb-6">
                     <div class="mb-4">
                         <label class="font-normal text-lg text-white block mb-3">Email Address</label>
-                        <input type="email"
+                        <input type="email" v-model="data.email"
                             class="auth-form focus:outline-none focus:bg-purple-hover focus:shadow-outline focus:border-purple-hover-stroke focus:text-gray-100"
-                            placeholder="Write your email address here" value="julia.keeva@gmail.com" />
+                            placeholder="Write your email address here" />
                     </div>
                 </div>
                 <div class="mb-6">
                     <div class="mb-4">
                         <label class="font-normal text-lg text-white block mb-3">Password</label>
-                        <input type="password"
+                        <input type="password" v-model="data.password"
                             class="auth-form focus:outline-none focus:bg-purple-hover focus:shadow-outline focus:border-purple-hover-stroke focus:text-gray-100"
-                            placeholder="Type your password here" value="nasigorenglimaribbu" />
+                            placeholder="Type your password here" />
                     </div>
                 </div>
                 <div class="mb-6">
                     <div class="mb-4">
-                        <button @click="$router.push({ path: '/upload' })"
+                        <button @click="signUpUser"
                             class="block w-full bg-orange-button hover:bg-green-button text-white font-semibold px-6 py-4 text-lg rounded-full">
                             Continue Sign Up
                         </button>
@@ -57,10 +57,54 @@
     </div>
 </template>
 
-<script>
+<script setup>
+import { useAuth } from '#build/imports';
+
 definePageMeta({
     layout: 'auth',
 })
+
+const { signUp, getSession } = useAuth()
+const authStore = useAuthStore();
+
+const data = ref({
+    name: '',
+    email: '',
+    occupation: '',
+    password: ''
+})
+
+const checkSession = async () => {
+    try {
+        const session = await getSession()
+        if (session) {
+            authStore.setUser(session.data)
+        }
+    } catch (error) {
+        console.log(`session error = ${error}`)
+    }
+}
+
+onMounted(() => {
+    checkSession()
+})
+
+const signUpUser = async () => {
+    try {
+        await signUp(
+            data.value,
+            {
+                redirect: false,
+            }
+        )
+        checkSession()
+        navigateTo('/upload')
+    } catch (error) {
+        console.log('error = ', error)
+    }
+}
+
+
 </script>
 
 <style scoped>
