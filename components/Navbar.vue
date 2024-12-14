@@ -18,7 +18,7 @@
                     Stories</nuxt-link>
             </li>
         </ul>
-        <ul class="flex ml-auto items-center mt-2" v-if="props.user === null">
+        <ul class="flex ml-auto items-center mt-2" v-if="authStore.user === null">
             <li>
                 <nuxt-link to="/register"
                     class="inline-block bg-transparent border-white border hover:bg-white hover:bg-opacity-25 text-white font-light w-40 text-center px-6 py-1 text-lg rounded-full mr-4">
@@ -35,10 +35,10 @@
         <div class="flex ml-auto" v-else>
             <div class="dropdown inline-block relative z-10 mr-4">
                 <button class="bg-white text-gray-7 font-semibold py-4 rounded inline-flex items-center">
-                    <img v-if="props.user.image_url" :src="`${apiBase}/${props.user.image_url}`" alt=""
+                    <img v-if="authStore.user.image_url" :src="`${apiBase}/${authStore.user.image_url}`" alt=""
                         class="h-8 rounded-full mr-2 ml-2" />
                     <span class="mr-1">
-                        {{ props.user.name }}
+                        {{ authStore.user.name }}
                     </span>
                     <svg class="fill-current h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                         <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
