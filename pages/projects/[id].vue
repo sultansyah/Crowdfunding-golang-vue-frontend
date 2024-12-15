@@ -10,28 +10,16 @@
                 <div class="w-3/4 mr-6">
                     <div class="bg-white p-3 mb-3 border border-gray-400 rounded-20">
                         <figure class="item-image">
-                            <img src="/project-image.jpg" alt="" class="rounded-20 w-full" />
+                            <img :src="defaultImage" alt="" class="rounded-20 w-full" />
                         </figure>
                     </div>
                     <div class="flex -mx-2">
-                        <div class="relative w-1/4 bg-white m-2 p-2 border border-gray-400 rounded-20">
+                        <div class="relative w-1/4 bg-white m-2 p-2 border border-gray-400 rounded-20"
+                            v-for="image in campaign.images" :key="image.image_url">
                             <figure class="item-thumbnail">
-                                <img src="/project-slider-1.jpg" alt="" class="rounded-20 w-full" />
-                            </figure>
-                        </div>
-                        <div class="relative w-1/4 bg-white m-2 p-2 border border-gray-400 rounded-20">
-                            <figure class="item-thumbnail">
-                                <img src="/project-slider-2.jpg" alt="" class="rounded-20 w-full" />
-                            </figure>
-                        </div>
-                        <div class="relative w-1/4 bg-white m-2 p-2 border border-gray-400 rounded-20">
-                            <figure class="item-thumbnail">
-                                <img src="/project-slider-3.jpg" alt="" class="rounded-20 w-full" />
-                            </figure>
-                        </div>
-                        <div class="relative w-1/4 bg-white m-2 p-2 border border-gray-400 rounded-20">
-                            <figure class="item-thumbnail">
-                                <img src="/project-slider-4.jpg" alt="" class="rounded-20 w-full" />
+                                <img :src="`${apiBase}/${campaign.image_url}`"
+                                    @click="changeImage(`${apiBase}/${campaign.image_url}`)" alt=""
+                                    class="rounded-20 w-full" />
                             </figure>
                         </div>
                     </div>
@@ -42,7 +30,7 @@
 
                         <div class="flex mt-3">
                             <div class="w-1/4">
-                                <img src="/testimonial-1-icon.png" alt="" class="w-full inline-block rounded-full" />
+                                <img :src="`${apiBase}/${campaign.user.image_url}`" />
                             </div>
                             <div class="w-3/4 ml-5 mt-1">
                                 <div class="font-semibold text-xl text-gray-800">
@@ -58,13 +46,21 @@
                         <ul class="list-check mt-3" v-for="perk in campaign.perks" :key="perk">
                             <li>{{ perk }}</li>
                         </ul>
-                        <input type="number"
-                            class="border border-gray-500 block w-full px-6 py-3 mt-4 rounded-full text-gray-800 transition duration-300 ease-in-out focus:outline-none focus:shadow-outline"
-                            placeholder="Amount in Rp" value="" />
-                        <nuxt-link to="/fund-success"
-                            class="text-center mt-3 button-cta block w-full bg-orange-button hover:bg-green-button text-white font-medium px-6 py-3 text-md rounded-full">
-                            Fund Now
-                        </nuxt-link>
+                        <template v-if="status == 'authenticated'">
+                            <input type="number" v-model.number="transactions.amount" @keyup.enter="fund"
+                                class="border border-gray-500 block w-full px-6 py-3 mt-4 rounded-full text-gray-800 transition duration-300 ease-in-out focus:outline-none focus:shadow-outline"
+                                placeholder="Amount in Rp" />
+                            <button @click="fund"
+                                class="text-center mt-3 button-cta block w-full bg-orange-button hover:bg-green-button text-white font-medium px-6 py-3 text-md rounded-full">
+                                Fund Now
+                            </button>
+                        </template>
+                        <template v-else>
+                            <button @click="$router.push({ path: '/login' })"
+                                class="text-center mt-3 button-cta block w-full bg-orange-button hover:bg-green-button text-white font-medium px-6 py-3 text-md rounded-full">
+                                Sign in to Fund
+                            </button>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -108,12 +104,12 @@
 
 <script setup>
 import { useRuntimeConfig } from '#app'
-import { useAuthStore, onMounted } from '#build/imports'
+import { onMounted, useAuth } from '#build/imports'
 
 const route = useRoute()
 const id = route.params.id
 
-const authStore = useAuthStore()
+const { status } = useAuth()
 const config = useRuntimeConfig()
 const apiBase = config.public.apiBase
 const { $fetch } = useNuxtApp()
@@ -124,8 +120,37 @@ const { data, error } = await useAsyncData('campaign', () =>
 if (error.value) {
     console.log(error.value)
 }
-
 const campaign = data.value.data
-console.log(campaign);
+
+const defaultImage = ref('')
+const transactions = ref({
+    amount: 0,
+    campaign_id: Number.parseInt(id)
+})
+
+const changeImage = (url) => {
+    defaultImage.value = url
+}
+
+const fund = async () => {
+    try {
+        let response = await $fetch('/transactions',
+            {
+                body: transactions.value,
+                method: 'POST',
+            }
+        )
+        console.log(response)
+
+
+        window.location = response.data.payment_url
+    } catch (error) {
+        console.log("error = ", error)
+    }
+}
+
+onMounted(() => {
+    defaultImage.value = `${apiBase}/${campaign.image_url}`
+})
 
 </script>
