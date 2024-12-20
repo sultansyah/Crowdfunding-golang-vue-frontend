@@ -173,8 +173,8 @@ import { useAuthStore, useAuth, onMounted } from '#build/imports'
 
 const { getSession } = useAuth()
 const authStore = useAuthStore()
-const config = useRuntimeConfig()
 const { $fetch } = useNuxtApp()
+const config = useRuntimeConfig()
 const apiBase = config.public.apiBase
 
 const checkSession = async () => {
@@ -192,9 +192,13 @@ onMounted(() => {
     checkSession()
 })
 
-const { data: campaigns, error, pending } = await useAsyncData('campaigns', () =>
-    $fetch('/campaigns')
-)
+try {
+    const { data: campaigns, error, pending } = await useAsyncData('campaigns', () =>
+        $fetch('/campaigns')
+    )
 
-const data = campaigns.value.data
+    const data = campaigns.value.data
+} catch (error) {
+    console.log(error)
+}
 </script>

@@ -27,6 +27,7 @@ export default defineNuxtConfig({
     storesDirs: ['./stores/**'],
   },
   auth: {
+    globalAppMiddleware: false,
     isEnabled: true,
     baseURL: 'http://localhost:8080/api/v1/',
     provider: { 

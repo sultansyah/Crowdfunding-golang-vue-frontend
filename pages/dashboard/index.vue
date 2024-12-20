@@ -11,7 +11,9 @@
                     <h2 class="text-4xl text-gray-900 mb-2 font-medium">Dashboard</h2>
                     <ul class="flex mt-2">
                         <li class="mr-6">
-                            <nuxt-link class="text-gray-800 font-bold" to="#"> Your Projects </nuxt-link>
+                            <nuxt-link class="text-gray-800 font-bold" to="#">
+                                Your Projects
+                            </nuxt-link>
                         </li>
                         <li class="mr-6">
                             <nuxt-link class="text-gray-500 hover:text-gray-800" to="/dashboard/transactions">
@@ -21,7 +23,7 @@
                     </ul>
                 </div>
                 <div class="w-1/4 text-right">
-                    <nuxt-link to="/dashboard/create"
+                    <nuxt-link to="/dashboard/projects/create"
                         class="bg-orange-button hover:bg-green-button text-white font-bold py-4 px-4 rounded inline-flex items-center">
                         + Create Campaign
                     </nuxt-link>
@@ -29,44 +31,63 @@
             </div>
             <hr />
             <div class="block mb-2">
-                <div class="w-full lg:max-w-full lg:flex mb-4" v-for="i in 5" key="i">
-                    <div class="h-48 lg:h-auto lg:w-48 flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l text-center overflow-hidden"
-                        style="
-                  background-image: url('https://tailwindcss.com/img/card-left.jpg');
-                "></div>
-                    <div
+                <div class="w-full lg:max-w-full lg:flex mb-4" v-for="campaign in campaigns" :key="campaign.id">
+                    <div class="border h-48 lg:h-auto lg:w-48 flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l text-center overflow-hidden"
+                        :style="{
+                            backgroundColor: '#bbb',
+                            backgroundPosition: 'center',
+                            backgroundImage: `url('${apiBase}/${campaign.image_url}')`
+                        }">
+                    </div>
+                    <nuxt-link :to="'/dashboard/projects/' + campaign.id"
                         class="border-r border-b border-l border-gray-400 lg:border-l-0 lg:border-t lg:border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-8 flex flex-col justify-between leading-normal">
                         <div class="mb-8">
                             <div class="text-gray-900 font-bold text-xl mb-1">
-                                Cari Uang Buat Gunpla
+                                {{ campaign.name }}
                             </div>
                             <p class="text-sm text-gray-600 flex items-center mb-2">
-                                Rp. 200.000.000 &middot; 80%
+                                Rp {{ new Intl.NumberFormat().format(campaign.goal_amount) }}
+                                &middot;
+                                {{ (campaign.current_amount / campaign.goal_amount) * 100 + '%' }}
                             </p>
                             <p class="text-gray-700 text-base">
-                                With N-key rollover (NKRO on wired mode only) you can register
-                                as many keys as you can press at once without missing out
-                                characters. It allows to use all the same media keys as
-                                conventional macOS.
+                                {{ campaign.short_description }}
                             </p>
                         </div>
                         <div class="flex items-center">
-                            <nuxt-link :to="'/dashboard/projects/' + i" class="bg-green-button text-white py-2 px-4 rounded">
+                            <button class="bg-green-button text-white py-2 px-4 rounded">
                                 Detail
-                            </nuxt-link>
+                            </button>
                         </div>
-                    </div>
+                    </nuxt-link>
                 </div>
             </div>
         </section>
         <div class="cta-clip -mt-20"></div>
         <section class="call-to-action bg-purple-progress pt-64 pb-10"></section>
-        <Footer/>
+        <Footer />
     </div>
 </template>
 
 <script setup>
-import { useAuth, useAuthStore, onMounted } from '#build/imports';
+import { useRuntimeConfig } from '#app'
+import { useAuthStore } from '#build/imports'
 
-const authStore = useAuthStore();
+definePageMeta({
+    middleware: 'auth'
+})
+
+const config = useRuntimeConfig()
+const authStore = useAuthStore()
+const { $fetch } = useNuxtApp()
+const apiBase = config.public.apiBase
+
+const { data } = await useAsyncData('campaigns', () =>
+    $fetch(`/campaigns?user_id=${authStore.user.id}`)
+)
+
+const campaigns = data.value.data
+
+console.log(campaigns);
+
 </script>
