@@ -13,12 +13,12 @@
             </div>
             <div class="flex justify-between items-center">
                 <div class="w-3/4 mr-6">
-                    <h3 class="text-2xl text-gray-900 mb-4">Create New Projects</h3>
+                    <h3 class="text-2xl text-gray-900 mb-4">Edit Campaign "{{ campaign.name }}"</h3>
                 </div>
                 <div class="w-1/4 text-right">
                     <button @click="save"
                         class="bg-green-button hover:bg-green-button text-white font-bold px-4 py-1 rounded inline-flex items-center">
-                        Save
+                        Update
                     </button>
                 </div>
             </div>
@@ -82,30 +82,36 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-
-const router = useRouter()
-
-const campaign = ref({
-    name: '',
-    short_description: '',
-    description: '',
-    goal_amount: '',
-    perks: ''
+definePageMeta({
+    middleware: 'auth'
 })
+
+const route = useRoute()
+const id = route.params.id
+
+const campaign = ref(null)
+
+const { data } = await useAsyncData('campaigns', () =>
+    useNuxtApp().$fetch(`/campaigns/${id}`)
+)
+console.log(data);
+
+
+campaign.value = data.value.data
 
 const save = async () => {
     try {
-        let response = await useNuxtApp().$fetch('/campaigns', {
-            method: "POST",
-            body: campaign.value,
+        const response = await useNuxtApp().$fetch(`/campaigns/${id}`, {
+            method: "PUT",
+            body: {
+                name: campaign.value.name,
+                short_description: campaign.value.short_description,
+                description: campaign.value.description,
+                goal_amount: campaign.value.goal_amount,
+                perks: campaign.value.perks,
+            },
         })
         console.log(response)
-        
-        router.push({
-            name: 'dashboard-projects-id',
-            params: { id: response.data.id }
-        })
     } catch (error) {
         console.log(error);
     }
